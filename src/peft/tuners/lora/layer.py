@@ -233,9 +233,16 @@ class Linear(nn.Module, LoraLayer):
         if adapter_names is None:
             adapter_names = self.active_adapters
 
+        print(f"adapter_names: {adapter_names}")
+
+        print("self.lora_A.keys(): ", self.lora_A.keys())
+
         for active_adapter in adapter_names:
             if active_adapter in self.lora_A.keys():
+                print("active_adapter: ", active_adapter)
                 base_layer = self.get_base_layer()
+
+                print("base_layer before: ", base_layer)
                 if safe_merge:
                     # Note that safe_merge will be slower than the normal merge
                     # because of the copy operation.
@@ -250,6 +257,8 @@ class Linear(nn.Module, LoraLayer):
                     base_layer.weight.data = orig_weights
                 else:
                     base_layer.weight.data += self.get_delta_weight(active_adapter)
+
+                print("base_layer after: ", base_layer)
                 self.merged_adapters.append(active_adapter)
 
     def unmerge(self) -> None:
